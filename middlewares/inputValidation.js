@@ -23,8 +23,9 @@ const contactValidation = [
 ];
 
 const galleryValidation = [
-    body('image_url').notEmpty().withMessage('URL gambar wajib diisi'),
-    body('caption').notEmpty().withMessage('Caption wajib diisi')
+    body('title').notEmpty().withMessage('Judul wajib diisi'),
+    body('image').notEmpty().withMessage('URL gambar wajib diisi'),
+    body('description').optional()
 ];
 
 module.exports = {

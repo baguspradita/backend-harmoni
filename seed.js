@@ -1,5 +1,5 @@
 const db = require('./config/db');
-const { Category, Package, Testimonial, Gallery } = require('./models');
+const { Category, Package, Testimonial, Gallery, Contact } = require('./models');
 
 const seedData = async () => {
     try {
@@ -80,6 +80,23 @@ const seedData = async () => {
             }
         ]);
         console.log('Galleries seeded... ✅');
+
+        // 5. Buat Contact (Pesan Masuk)
+        await Contact.bulkCreate([
+            {
+                name: 'John Doe',
+                email: 'john@mail.com',
+                subject: 'Tanya Paket Yogyakarta',
+                message: 'Halo, saya tertarik dengan paket City Tour Yogyakarta. Apakah masih ada slot untuk 2 orang?'
+            },
+            {
+                name: 'Jane Smith',
+                email: 'jane@example.com',
+                subject: 'Request Custom Tour',
+                message: 'Bisakah saya meminta paket custom untuk perjalanan ke Bromo dan Ijen?'
+            }
+        ]);
+        console.log('Contacts seeded... ✅');
 
         console.log('Database seeded successfully! 🎉');
         process.exit();
