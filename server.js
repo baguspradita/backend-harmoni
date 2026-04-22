@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 3000;
 // middleware
 app.use(express.json());
 
-// rute API
+// route API
 app.use('/api/packages', packageRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/testimonials', testimonialRoutes);
@@ -29,11 +29,11 @@ app.use('/api/gallery', galleryRoutes);
 const startServer = async () => {
     try {
         await db.authenticate();
-        console.log('Database connected... 🚀');
+        console.log('Database connected... ');
         
         // sync models (create tables if not exist)
         await db.sync({ alter: true }); // Menggunakan alter:true untuk menambahkan kolom baru (categoryId)
-        console.log('Models synchronized... ✅');
+        console.log('Models synchronized... ');
         
         // run server
         app.listen(PORT, () => {

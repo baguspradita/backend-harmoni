@@ -9,6 +9,17 @@ exports.getAllGalleries = async (req, res) => {
     }
 };
 
+exports.getGalleryById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const gallery = await Gallery.findByPk(id);
+        if (!gallery) return res.status(404).json({ message: "Gallery image not found" });
+        res.json(gallery);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 exports.createGallery = async (req, res) => {
     try {
         const newGallery = await Gallery.create(req.body);
