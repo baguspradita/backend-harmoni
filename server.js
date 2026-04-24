@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const db = require('./config/db');
 require('dotenv').config();
@@ -20,6 +21,7 @@ const models = require('./models');
 const PORT = process.env.PORT || 3000;
 
 // ===== MIDDLEWARE =====
+app.use(cors());
 // Middleware untuk parsing JSON dari request body
 app.use(express.json());
 

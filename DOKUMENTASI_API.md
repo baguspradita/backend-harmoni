@@ -134,9 +134,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 ```json
 {
     "name": "Paket Tour Jogja 3D2N",
-    "description": "Jelajahi keindahan candi dan budaya Yogyakarta.",
+    "description": "Jelajahi keindahan candi dan budaya Yogyakarta",
     "price": 1500000,
     "image": "https://images.unsplash.com/photo-1584810359583-96fc3448beaa",
+    "durasi": "3 Hari 2 Malam",
+    "highlight_utama": "Candi Borobudur, Candi Prambanan, Pantai Parangtritis, Taman Pintar",
     "categoryId": 1
 }
 ```
@@ -147,8 +149,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiO
 - **Body (raw JSON)**:
 ```json
 {
-    "price": 1750000,
-    "description": "Deskripsi paket telah diperbarui."
+    "price": 1800000,
+    "durasi": "4 Hari 3 Malam",
+    "highlight_utama": "Candi Borobudur, Candi Prambanan, Pantai Parangtritis, Taman Pintar, Ramayana Ballet"
 }
 ```
 
