@@ -3,39 +3,49 @@ const app = express();
 const db = require('./config/db');
 require('dotenv').config();
 
-// import routes
+// ===== IMPORT ROUTES =====
+// TAMBAH: Import auth routes untuk login & register
+const authRoutes = require('./routes/auth');
 const packageRoutes = require('./routes/packages');
 const categoryRoutes = require('./routes/categories');
 const testimonialRoutes = require('./routes/testimonials');
 const contactRoutes = require('./routes/contact');
 const galleryRoutes = require('./routes/gallery');
 
-// import models & associations
+// ===== IMPORT MODELS & ASSOCIATIONS =====
+// Import semua model termasuk User yang baru
 const models = require('./models');
 
+// ===== KONFIGURASI =====
 const PORT = process.env.PORT || 3000;
 
-// middleware
+// ===== MIDDLEWARE =====
+// Middleware untuk parsing JSON dari request body
 app.use(express.json());
 
-// route API
+// ===== ROUTE API =====
+// TAMBAH: Auth routes (register & login) harus diposisikan paling depan
+app.use('/api/auth', authRoutes);
 app.use('/api/packages', packageRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/testimonials', testimonialRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/gallery', galleryRoutes);
 
-// testing database connection & sync models
+// ===== DATABASE CONNECTION & SERVER START =====
+// Async function untuk mengkoneksi database dan start server
 const startServer = async () => {
     try {
+        // Test koneksi database
         await db.authenticate();
         console.log('Database connected... ');
         
-        // sync models (create tables if not exist)
-        await db.sync({ alter: true }); // Menggunakan alter:true untuk menambahkan kolom baru (categoryId)
+        // Sinkronisasi semua model (buat tabel jika belum ada)
+        // alter: true = update kolom jika ada perubahan di model
+        await db.sync({ alter: true });
         console.log('Models synchronized... ');
         
-        // run server
+        // Jalankan server
         app.listen(PORT, () => {
             console.log(`Server running di http://localhost:${PORT}`);
         });
@@ -44,9 +54,11 @@ const startServer = async () => {
     }
 };
 
-// root route
+// ===== ROOT ROUTE =====
+// Route untuk test apakah server jalan
 app.get('/', async (req, res) => {
     try {
+        // Test koneksi database
         await db.authenticate();
         res.json({
             status: "success",
@@ -62,4 +74,5 @@ app.get('/', async (req, res) => {
     }
 });
 
+// ===== START SERVER =====
 startServer();

@@ -3,11 +3,15 @@ const router = express.Router();
 const contactController = require('../controllers/contactController');
 const { contactValidation } = require('../middlewares/inputValidation');
 const { validate } = require('../middlewares/validator');
+const { authenticate } = require('../middlewares/auth');
 
-router.get('/', contactController.getAllContacts);
-router.get('/:id', contactController.getContactById);
+// ===== PUBLIC ROUTES (Siapa saja bisa submit form kontak) =====
+router.get('/', authenticate, contactController.getAllContacts);  // Hanya admin yang lihat semua
+router.get('/:id', authenticate, contactController.getContactById);
 router.post('/', contactValidation, validate, contactController.createContact);
-router.put('/:id', contactValidation, validate, contactController.updateContact);
-router.delete('/:id', contactController.deleteContact);
+
+// ===== PROTECTED ROUTES (Hanya admin yang bisa edit/hapus) =====
+router.put('/:id', authenticate, contactValidation, validate, contactController.updateContact);
+router.delete('/:id', authenticate, contactController.deleteContact);
 
 module.exports = router;
