@@ -109,3 +109,22 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+
+// ===== FUNCTION LOGOUT =====
+// Controller untuk proses logout user
+// Logout dengan JWT hanya perlu return response sukses
+// Token dihapus di client-side (localStorage/sessionStorage)
+exports.logout = async (req, res) => {
+    try {
+        // Karena JWT stateless, logout hanya proses di client
+        // Server cukup return response sukses untuk konfirmasi
+        res.status(200).json({
+            status: "success",
+            message: "Logout berhasil. Silakan hapus token dari client.",
+            // Opsional: tambah timestamp logout
+            loggedOutAt: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

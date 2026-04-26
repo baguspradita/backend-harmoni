@@ -4,11 +4,18 @@ const express = require('express');
 const router = express.Router();
 // Import auth controller yang berisi logic register & login
 const authController = require('../controllers/authController');
+// Import middleware authentication
+const { authenticate } = require('../middlewares/auth');
 
 // ===== ROUTE REGISTER =====
 // POST /api/auth/register
 // Endpoint untuk registrasi user baru
 router.post('/register', authController.register);
+
+// ===== ROUTE LOGOUT =====
+// POST /api/auth/logout
+// Endpoint untuk logout
+router.post('/logout', authenticate, authController.logout);
 
 // ===== ROUTE LOGIN =====
 // POST /api/auth/login
