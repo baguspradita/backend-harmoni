@@ -9,7 +9,7 @@ const { authenticate } = require('../middlewares/auth');
 router.get('/', packageController.getAllPackages);
 router.get('/:id', packageController.getPackageById);
 
-// ===== PROTECTED ROUTES (Hanya admin yang login) =====
+// ===== PROTECTED ROUTES (Hanya yang login) =====
 router.post('/', authenticate, packageValidation, validate, packageController.createPackage);
 router.put('/:id', authenticate, packageValidation, validate, packageController.updatePackage);
 router.delete('/:id', authenticate, packageController.deletePackage);

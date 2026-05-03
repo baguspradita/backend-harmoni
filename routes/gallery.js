@@ -5,6 +5,7 @@ const { galleryValidation } = require('../middlewares/inputValidation');
 const { validate } = require('../middlewares/validator');
 const { authenticate } = require('../middlewares/auth');
 
+
 // ===== PUBLIC ROUTES (Semua orang bisa lihat galeri) =====
 router.get('/', galleryController.getAllGalleries);
 router.get('/:id', galleryController.getGalleryById);

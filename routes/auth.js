@@ -22,5 +22,8 @@ router.post('/logout', authenticate, authController.logout);
 // Endpoint untuk login dan mendapatkan JWT token
 router.post('/login', authController.login);
 
+// ===== ROUTE VERIFY  =====
+router.get('/verify', authenticate, authController.verify);
+
 // Export router agar bisa digunakan di server.js
 module.exports = router;

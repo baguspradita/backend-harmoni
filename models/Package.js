@@ -5,32 +5,26 @@ const Package = db.define('Package', {
     // ===== FIELD YANG SUDAH ADA =====
     name: {
         type: DataTypes.STRING,
-        allowNull: false,
-        comment: 'Nama paket wisata'
+        allowNull: false
     },
     description: {
-        type: DataTypes.TEXT,
-        comment: 'Deskripsi lengkap paket'
+        type: DataTypes.TEXT
     },
     price: {
-        type: DataTypes.INTEGER,
-        comment: 'Harga paket dalam Rupiah'
+        type: DataTypes.INTEGER
     },
     image: {
-        type: DataTypes.STRING,
-        comment: 'URL gambar paket'
+        type: DataTypes.STRING
     },
     
     // ===== FIELD BARU =====
     durasi: {
         type: DataTypes.STRING,
-        allowNull: false,
-        comment: 'Durasi paket (contoh: 3 Hari 2 Malam, 5 Hari 4 Malam)'
+        allowNull: false
     },
     highlight_utama: {
         type: DataTypes.TEXT,
-        allowNull: false,
-        comment: 'Destinasi wisata utama yang akan dikunjungi (pisahkan dengan koma)'
+        allowNull: false
     }
 }, {
     tableName: 'packages',

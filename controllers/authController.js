@@ -57,47 +57,39 @@ exports.register = async (req, res) => {
 };
 
 // ===== FUNCTION LOGIN =====
-// Controller untuk proses login user
 exports.login = async (req, res) => {
     try {
-        // Ambil email dan password dari request body
         const { email, password } = req.body;
 
-        // VALIDASI 1: Cek email dan password diisi
+        // Validasi input
         if (!email || !password) {
             return res.status(400).json({ message: "Email dan password harus diisi" });
         }
 
-        // VALIDASI 2: Cari user berdasarkan email di database
+        // Cari user berdasarkan email
         const user = await User.findOne({ where: { email } });
-        if (!user) {
-            // Jangan spesifik bilang "email tidak ditemukan" karena alasan keamanan
-            return res.status(401).json({ message: "Email atau password salah" });
+
+        // Cek user ada dan password cocok
+        if (!user || !(await bcrypt.compare(password, user.password))) {
+            return res.status(400).json({ message: "Email atau password salah" });
         }
 
-        // VALIDASI 3: Bandingkan password input dengan password terenkripsi di database
-        // bcrypt.compare akan men-decrypt password database dan membandingkannya
-        const isValidPassword = await bcrypt.compare(password, user.password);
-        if (!isValidPassword) {
-            return res.status(401).json({ message: "Email atau password salah" });
-        }
-
-        // ===== BUAT JWT TOKEN =====
-        // Payload JWT berisi id dan email user
-        // Ini data yang akan di-decode nanti saat verify token
+        // Buat JWT token (HAPUS role dari sini)
         const token = jwt.sign(
-            { id: user.id, email: user.email },
-            // Secret key untuk sign token - ambil dari .env atau gunakan default
+            {
+                id: user.id,
+                email: user.email,
+                name: user.name
+            },
             process.env.JWT_SECRET || 'your-secret-key',
-            // Token berlaku selama 24 jam
             { expiresIn: '24h' }
         );
 
-        // Return response sukses dengan token
+        // Return token dan data user
         res.status(200).json({
             status: "success",
             message: "Login berhasil",
-            token: token,  // Token ini harus disimpan di frontend (localStorage/sessionStorage)
+            token: token,
             user: {
                 id: user.id,
                 name: user.name,
@@ -105,8 +97,28 @@ exports.login = async (req, res) => {
             }
         });
     } catch (error) {
-        // Jika ada error di database/server, return error
         res.status(500).json({ message: error.message });
+    }
+};
+
+// ===== FUNCTION VERIFY TOKEN =====
+exports.verify = async (req, res) => {
+    try {
+        // Token sudah di-verify oleh middleware authenticate
+        // Jika sampai sini, berarti token valid
+        const user = req.user; // Dari middleware authenticate
+
+        res.status(200).json({
+            status: "success",
+            message: "Token valid",
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        res.status(401).json({ message: "Token tidak valid" });
     }
 };
 
