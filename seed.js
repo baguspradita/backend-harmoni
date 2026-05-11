@@ -1,6 +1,6 @@
 const db = require('./config/db');
-const Package = require('./models/Package');
-const { Category, Package, Testimonial, Gallery, Contact } = require('./models');
+const bcryptjs = require('bcryptjs');
+const { Category, Package, Testimonial, Gallery, Contact, User } = require('./models');
 
 const seedData = async () => {
     try {
@@ -10,6 +10,16 @@ const seedData = async () => {
         // Hapus data lama agar bersih (Opsional)
         await db.sync({ force: true });
         console.log('Database cleared! 🧹');
+
+        const hashedPassword = await bcryptjs.hash('admin123', 10);
+        await User.bulkCreate([
+            {
+                name: 'Admin Harmoni',
+                email: 'admin@harmoni.com',
+                password: await bcryptjs.hash('password', 10)
+            }
+        ]);
+        console.log('Admin users seeded... ✅');
 
         // 1. Buat Kategori
         const categories = await Category.bulkCreate([
