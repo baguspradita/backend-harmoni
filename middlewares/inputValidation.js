@@ -31,7 +31,9 @@ const contactValidation = [
 
 // ===== GALLERY VALIDATION =====
 const galleryValidation = [
-    body('caption').notEmpty().withMessage('Caption wajib diisi')
+    
+    body('title').notEmpty().withMessage('Judul wajib diisi'),
+    body('description').notEmpty().withMessage('Deskripsi wajib diisi')
 ];
 
 // ===== EXPORT ALL VALIDATIONS =====

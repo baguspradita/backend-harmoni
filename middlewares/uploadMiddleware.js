@@ -17,30 +17,41 @@ if (!process.env.CLOUDINARY_NAME || !process.env.CLOUDINARY_API_KEY || !process.
 // Setup Multer Storage dengan Cloudinary
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: 'harmoni-packages',
-        resource_type: 'auto',
-        allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+    params: async (req, file) => {
+        // Tentukan folder berdasarkan URL endpoint
+        let folderName = 'harmoni-general'; // Default folder
+
+        if (req.originalUrl.includes('packages')) {
+            folderName = 'harmoni-packages';
+        } else if (req.originalUrl.includes('gallery')) {
+            folderName = 'harmoni-gallery';
+        }
+
+        return {
+            folder: folderName,
+            resource_type: 'auto',
+            allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+        };
     }
 });
 
-const upload = multer({ 
+const upload = multer({
     storage: storage,
-    limits: { 
+    limits: {
         fileSize: 10 * 1024 * 1024, // Max 10MB (increased from 5MB)
         fieldSize: 25 * 1024 * 1024
     },
     abortOnLimit: true,
     fileFilter: (req, file, cb) => {
         console.log('\n📤 File received:', file.originalname, 'Size:', file.size, 'MIME:', file.mimetype);
-        
+
         // Validasi file type
         const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (!allowedMimes.includes(file.mimetype)) {
             console.error('❌ Format file tidak didukung:', file.mimetype);
             return cb(new Error('❌ Format file tidak didukung. Hanya JPG, PNG, GIF, WEBP'));
         }
-        
+
         console.log('✅ File validated, passing to Cloudinary...');
         cb(null, true);
     }
