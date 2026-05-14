@@ -41,12 +41,12 @@ const startServer = async () => {
         // Test koneksi database
         await db.authenticate();
         console.log('Database connected... ');
-        
+
         // Sinkronisasi semua model (buat tabel jika belum ada)
         // alter: true = update kolom jika ada perubahan di model
         await db.sync({ alter: true });
         console.log('Models synchronized... ');
-        
+
         // Jalankan server
         app.listen(PORT, () => {
             console.log(`Server running di http://localhost:${PORT}`);
@@ -74,6 +74,49 @@ app.get('/', async (req, res) => {
             error: error.message
         });
     }
+});
+
+// ===== GLOBAL ERROR HANDLER =====
+app.use((err, req, res, next) => {
+    console.error('❌ Error:', err.message);
+
+    // Error dari multer (file upload)
+    if (err.name === 'MulterError') {
+        console.error('📤 MulterError code:', err.code);
+        
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(413).json({
+                status: 'error',
+                message: 'File terlalu besar (max 10MB)'
+            });
+        }
+        if (err.code === 'ABORT') {
+            return res.status(408).json({
+                status: 'error',
+                message: 'Upload timeout atau client disconnect'
+            });
+        }
+        return res.status(400).json({
+            status: 'error',
+            message: 'File upload error: ' + err.message
+        });
+    }
+
+    // Error dari request aborted
+    if (err.code === 'ECONNABORTED' || err.message?.includes('aborted')) {
+        console.error('🔌 Request aborted');
+        return res.status(408).json({
+            status: 'error',
+            message: 'Request timeout - coba upload ulang dengan file lebih kecil'
+        });
+    }
+
+    // Error umum
+    res.status(err.status || 500).json({
+        status: 'error',
+        message: err.message || 'Internal Server Error',
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
+    });
 });
 
 // ===== START SERVER =====

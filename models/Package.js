@@ -16,7 +16,7 @@ const Package = db.define('Package', {
     image: {
         type: DataTypes.STRING
     },
-    
+
     // ===== FIELD BARU =====
     durasi: {
         type: DataTypes.STRING,
@@ -24,6 +24,10 @@ const Package = db.define('Package', {
     },
     highlight_utama: {
         type: DataTypes.TEXT,
+        allowNull: false
+    },
+        categoryId: {  // 👈 TAMBAH FIELD INI
+        type: DataTypes.INTEGER,
         allowNull: false
     }
 }, {

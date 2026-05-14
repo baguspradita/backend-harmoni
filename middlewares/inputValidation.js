@@ -5,7 +5,6 @@ const packageValidation = [
     body('name').notEmpty().withMessage('Nama paket harus diisi'),
     body('description').notEmpty().withMessage('Deskripsi harus diisi'),
     body('price').isInt().withMessage('Harga harus angka'),
-    body('image').notEmpty().withMessage('Gambar harus diisi'),
     body('durasi').notEmpty().withMessage('Durasi harus diisi'),
     body('highlight_utama').notEmpty().withMessage('Highlight utama harus diisi'),
     body('categoryId').isInt().withMessage('Category ID harus angka')
@@ -32,7 +31,6 @@ const contactValidation = [
 
 // ===== GALLERY VALIDATION =====
 const galleryValidation = [
-    body('image_url').notEmpty().withMessage('URL gambar wajib diisi'),
     body('caption').notEmpty().withMessage('Caption wajib diisi')
 ];
 
