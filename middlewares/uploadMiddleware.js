@@ -18,13 +18,17 @@ if (!process.env.CLOUDINARY_NAME || !process.env.CLOUDINARY_API_KEY || !process.
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: async (req, file) => {
-        // Tentukan folder berdasarkan URL endpoint
-        let folderName = 'harmoni-general'; // Default folder
+        // Ambil path utama (misal: /api/packages atau /api/gallery)
+        const path = req.baseUrl || req.originalUrl;
 
-        if (req.originalUrl.includes('packages')) {
-            folderName = 'harmoni-packages';
-        } else if (req.originalUrl.includes('gallery')) {
-            folderName = 'harmoni-gallery';
+        console.log('DEBUG: Uploading from path:', path); // Tambahkan log ini
+
+        let folderName = 'harmoni/general';
+
+        if (path.includes('packages')) {
+            folderName = 'harmoni/packages';
+        } else if (path.includes('gallery')) {
+            folderName = 'harmoni/gallery';
         }
 
         return {
