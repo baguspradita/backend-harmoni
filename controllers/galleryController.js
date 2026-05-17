@@ -23,7 +23,7 @@ exports.getGalleryById = async (req, res) => {
 
 exports.createGallery = async (req, res) => {
     try {
-        console.log('\n=== CREATE GALLERY ===' );
+        console.log('\n=== CREATE GALLERY ===');
         console.log('📦 req.file:', JSON.stringify(req.file, null, 2));
         console.log('📦 req.body:', req.body);
 
@@ -39,7 +39,7 @@ exports.createGallery = async (req, res) => {
             ...req.body,
             image: imageUrl  // URL dari Cloudinary
         });
-        
+
         console.log('✅ Gallery created:', newGallery.id);
         console.log('🖼️ Image saved:', newGallery.image);
         res.status(201).json(newGallery);
@@ -52,11 +52,11 @@ exports.createGallery = async (req, res) => {
 exports.updateGallery = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log('\n=== UPDATE GALLERY ===' );
+        console.log('\n=== UPDATE GALLERY ===');
         console.log('🔄 Gallery ID:', id);
         console.log('📦 req.file:', JSON.stringify(req.file, null, 2));
         console.log('📦 req.body:', req.body);
-        
+
         // 1. Ambil gallery lama untuk dapat image lama
         const oldGallery = await Gallery.findByPk(id);
         if (!oldGallery) {
@@ -67,23 +67,27 @@ exports.updateGallery = async (req, res) => {
         if (req.file && oldGallery.image) {
             try {
                 console.log('📎 Old image URL:', oldGallery.image);
-                
+
                 // Extract public_id dari URL Cloudinary
                 const urlParts = oldGallery.image.split('/upload/');
                 if (urlParts.length === 2) {
                     const afterUpload = urlParts[1];
                     const pathParts = afterUpload.split('/');
-                    
+
+                    // Ambil filename tanpa extension
                     const fileName = pathParts[pathParts.length - 1].split('.')[0];
-                    const folder = pathParts[pathParts.length - 2];
-                    const oldPublicId = `${folder}/${fileName}`;
+
+                    // Ambil semua folder sebelum filename (skip version di index 0)
+                    const folderPath = pathParts.slice(1, -1).join('/');
                     
-                    console.log('🗑️ Deleting old image from Cloudinary:', oldPublicId);
+                    const oldPublicId = `${folderPath}/${fileName}`;
+
+                    console.log('Deleting old image from Cloudinary:', oldPublicId);
                     await cloudinary.uploader.destroy(oldPublicId);
-                    console.log('✅ Old image deleted from Cloudinary:', oldPublicId);
+                    console.log('Old image deleted from Cloudinary:', oldPublicId);
                 }
             } catch (cloudError) {
-                console.warn('⚠️ Failed to delete old image:', cloudError.message);
+                console.warn('Failed to delete old image:', cloudError.message);
                 // Lanjutkan update meski delete lama gagal
             }
         }
@@ -97,7 +101,7 @@ exports.updateGallery = async (req, res) => {
             { ...req.body, image: imageUrl },
             { where: { id } }
         );
-        
+
         if (updated) {
             const updatedGallery = await Gallery.findByPk(id);
             console.log('✅ Gallery updated:', id);
@@ -114,9 +118,9 @@ exports.updateGallery = async (req, res) => {
 exports.deleteGallery = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log('\n=== DELETE GALLERY ===' );
+        console.log('\n=== DELETE GALLERY ===');
         console.log('🔄 Gallery ID:', id);
-        
+
         // 1. Ambil gallery untuk dapat image URL
         const galleryData = await Gallery.findByPk(id);
         if (!galleryData) {
@@ -130,23 +134,27 @@ exports.deleteGallery = async (req, res) => {
             try {
                 // Extract public_id dari URL Cloudinary
                 const urlParts = galleryData.image.split('/upload/');
-                
+
                 if (urlParts.length === 2) {
                     const afterUpload = urlParts[1];
                     const pathParts = afterUpload.split('/');
-                    
+
+                    // Ambil filename tanpa extension
                     const fileName = pathParts[pathParts.length - 1].split('.')[0];
-                    const folder = pathParts[pathParts.length - 2];
-                    const publicId = `${folder}/${fileName}`;
-                    
-                    console.log('📤 Deleting from Cloudinary:', publicId);
-                    
+
+                    // Ambil semua folder sebelum filename (skip version di index 0)
+                    const folderPath = pathParts.slice(1, -1).join('/');
+
+                    const publicId = `${folderPath}/${fileName}`;
+
+                    console.log('Deleting from Cloudinary:', publicId);
+
                     const result = await cloudinary.uploader.destroy(publicId);
-                    console.log('📤 Cloudinary destroy result:', JSON.stringify(result, null, 2));
-                    console.log('✅ Image deleted from Cloudinary:', publicId);
+                    console.log('Cloudinary destroy result:', JSON.stringify(result, null, 2));
+                    console.log('Image deleted from Cloudinary:', publicId);
                 }
             } catch (cloudError) {
-                console.error('❌ Cloudinary delete error:', cloudError.message);
+                console.error('Cloudinary delete error:', cloudError.message);
                 // Lanjutkan delete dari DB meski Cloudinary gagal
             }
         }

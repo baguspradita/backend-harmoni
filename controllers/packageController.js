@@ -52,11 +52,11 @@ exports.createPackage = async (req, res) => {
 exports.updatePackage = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log('\n=== UPDATE PACKAGE ===' );
+        console.log('\n=== UPDATE PACKAGE ===');
         console.log('🔄 Package ID:', id);
         console.log('📦 req.file:', JSON.stringify(req.file, null, 2));
         console.log('📦 req.body:', req.body);
-        
+
         // 1. Ambil package lama untuk dapat image lama
         const oldPackage = await Package.findByPk(id);
         if (!oldPackage) {
@@ -67,17 +67,21 @@ exports.updatePackage = async (req, res) => {
         if (req.file && oldPackage.image) {
             try {
                 console.log('📎 Old image URL:', oldPackage.image);
-                
+
                 // Extract public_id dari URL Cloudinary
                 const urlParts = oldPackage.image.split('/upload/');
                 if (urlParts.length === 2) {
                     const afterUpload = urlParts[1];
                     const pathParts = afterUpload.split('/');
-                    
+
+                    // Ambil filename tanpa extension
                     const fileName = pathParts[pathParts.length - 1].split('.')[0];
-                    const folder = pathParts[pathParts.length - 2];
-                    const oldPublicId = `${folder}/${fileName}`;
+
+                    // Ambil semua folder sebelum filename (skip version di index 0)
+                    const folderPath = pathParts.slice(1, -1).join('/');
                     
+                    const oldPublicId = `${folderPath}/${fileName}`;
+
                     console.log('Deleting old image from Cloudinary:', oldPublicId);
                     await cloudinary.uploader.destroy(oldPublicId);
                     console.log('Old image deleted from Cloudinary:', oldPublicId);
@@ -97,7 +101,7 @@ exports.updatePackage = async (req, res) => {
             { ...req.body, image: imageUrl },
             { where: { id } }
         );
-        
+
         if (updated) {
             const updatedPackage = await Package.findByPk(id);
             console.log('Package updated:', id);
@@ -129,23 +133,19 @@ exports.deletePackage = async (req, res) => {
         if (packageData.image) {
             try {
                 // Extract public_id dari URL Cloudinary
-                // URL format: https://res.cloudinary.com/{cloud_name}/image/upload/v{timestamp}/{folder}/{filename}
                 const urlParts = packageData.image.split('/upload/');
-                console.log('🔍 urlParts:', urlParts);
 
                 if (urlParts.length === 2) {
-                    // urlParts[1] = 'v1778763198/harmoni-packages/vhwm70ch3ed0a513boj1.png'
                     const afterUpload = urlParts[1];
-                    console.log('📝 afterUpload:', afterUpload);
-
-                    // Ambil path setelah version (dari folder pertama)
                     const pathParts = afterUpload.split('/');
-                    console.log('📝 pathParts:', pathParts);
 
-                    // Public ID = folder/filename (tanpa version, tanpa extension)
+                    // Ambil filename tanpa extension
                     const fileName = pathParts[pathParts.length - 1].split('.')[0];
-                    const folder = pathParts[pathParts.length - 2];
-                    const publicId = `${folder}/${fileName}`;
+
+                    // Ambil semua folder sebelum filename (skip version di index 0)
+                    const folderPath = pathParts.slice(1, -1).join('/');
+
+                    const publicId = `${folderPath}/${fileName}`;
 
                     console.log('📤 Extracted publicId:', publicId);
                     console.log('📤 Attempting to delete from Cloudinary...');
@@ -156,7 +156,7 @@ exports.deletePackage = async (req, res) => {
                 }
             } catch (cloudError) {
                 console.error('❌ Cloudinary delete error:', cloudError.message);
-                console.error('Full error:', cloudError); // Lanjutkan delete dari DB meski Cloudinary gagal
+                console.error('Full error:', cloudError);
             }
         }
 
